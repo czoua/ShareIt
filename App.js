@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
   ScrollView,
   TextInput,
-  Image
+  Image,
+  Button,
+  TouchableHighlight,
+  FlatList
 } from "react-native";
 import Test from "./Test.png";
 import Schuhe from "./Schuhe.jpg";
@@ -13,30 +16,68 @@ import TP from "./TP.jpg";
 import SNES from "./SNES.jpg";
 import Controller from "./Controller.jpg";
 function Artikel(props) {
+  const [isLiked, setIsLiked] = useState(false);
   return (
-    <View style={styles.listingContainer}>
-      <Image source={props.source} alt={props.alt} style={styles.artikelBild} />
-      <View style={styles.descriptionContainer}>
-        <Text styles={styles.descriptionHeader}>{props.name}!!!</Text>
-        <Text style={styles.descriptionText}>
-          This is just a test to see how it all lines up
-        </Text>
+    <View>
+      <View style={styles.listingContainer}>
+        <Image
+          source={props.source}
+          alt={props.alt}
+          style={styles.artikelBild}
+        />
+        <View style={styles.descriptionContainer}>
+          <Text styles={styles.descriptionHeader}>{props.name}!!!</Text>
+          <Text style={styles.descriptionText}>
+            This is just a test to see how it all lines up
+          </Text>
+        </View>
       </View>
+      <Button
+        onPress={() => {
+          setIsLiked(true);
+        }}
+        disabled={isLiked}
+        title={isLiked ? "Like!" : "Like?"}
+      />
     </View>
   );
 }
+const initialArticles = { count: 5 };
 export default function App() {
+  const [count, setCount] = useState(6);
+  const [articles, setArticles] = useState([
+    { key: "1", name: "Schuhe", source: { Schuhe }, alt: "Schuhe" },
+    { key: "2", name: "TP", source: { TP }, alt: "TP" },
+    { key: "3", name: "SNES", source: { SNES }, alt: "SNES" },
+    { key: "4", name: "Test", source: { Test }, alt: "Test" },
+    { key: "5", name: "Controller", source: { Controller }, alt: "Controller" }
+  ]);
+  function addArticle() {
+    articles.push({
+      key: `${count}`,
+      name: `${count}`,
+      source: { TP },
+      alt: "TP"
+    });
+    articles = [];
+    setCount(count + 1);
+    setArticles(articles);
+  }
   return (
-    <ScrollView style={styles.container} indicatorStyle="black">
+    <View style={styles.container} indicatorStyle="black">
       <Text style={styles.headerText}>Share IT!</Text>
       <TextInput style={styles.searchBar} placeholder="Ich brauche noch was!" />
-      <Artikel name="Schuhe" source={Schuhe} alt="Schuhe" />
-      <Artikel name="TP" source={TP} alt="TP" />
-      <Artikel name="SNES" source={SNES} alt="SNES" />
-      <Artikel name="Test" source={Test} alt="Test" />
-      <Artikel name="Controller" source={Controller} alt="Controller" />
+      <FlatList
+        data={articles}
+        renderItem={({ item }) => (
+          <Artikel name={item.name} source={item.source} alt={item.name} />
+        )}
+      />
+      <TouchableHighlight style={styles.button} onPress={() => addArticle()}>
+        <Text>{count}</Text>
+      </TouchableHighlight>
       <TextInput style={styles.searchBar} placeholder="Ich habe noch was!" />
-    </ScrollView>
+    </View>
   );
 }
 
@@ -93,5 +134,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 20,
     textAlign: "center"
+  },
+  button: {
+    height: 100,
+    width: 100
   }
 });
